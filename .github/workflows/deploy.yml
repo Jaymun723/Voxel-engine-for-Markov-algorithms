@@ -19,9 +19,16 @@ jobs:
         cd emsdk
         ./emsdk install latest
         ./emsdk activate latest
-        echo "source $(pwd)/emsdk_env.sh" >> $GITHUB_ENV
+        source ./emsdk_env.sh
+        echo "::add-path::$(pwd)"/emsdk
+        echo "::add-path::$(pwd)"/emsdk/upstream/emscripten
+        echo "EMSDK=$(pwd)/emsdk" >> $GITHUB_ENV
+        echo "EMSCRIPTEN=$(pwd)/emsdk/upstream/emscripten" >> $GITHUB_ENV
 
     - name: Build project
+      env:
+        EMSDK: ${{ env.EMSDK }}
+        EMSCRIPTEN: ${{ env.EMSCRIPTEN }}
       run: |
         source $GITHUB_ENV
         python3 scripts/linux_compile_emscripten.py
