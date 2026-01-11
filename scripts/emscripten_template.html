@@ -2,48 +2,67 @@
 
 <html lang="en">
 
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
-            #canvas {
-                background-color: black;
-            }
-        </style>
-    </head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <body>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-        <canvas id="canvas" width="600" height="600"  oncontextmenu="event.preventDefault()"></canvas>
+        #canvas {
+            display: block;
+            background-color: black;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
 
+<body>
 
-        <script type='text/javascript'>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+    <script type='text/javascript'>
         var Module = {
-            canvas: (function() {
+            canvas: (function () {
                 var canvas = document.getElementById('canvas');
-                canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+                canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
                 return canvas;
             })(),
-        };
-        </script>
-
-        <script async type="text/javascript" src="index.js"></script>
-
-        <script async type="text/javascript">
-            
-            resize();
-            window.addEventListener("resize", resize);
-            function resize()
-            {
-                canvas.width  = window.innerWidth-5;
-                canvas.height = window.innerHeight-5;
+            setStatus: function (text) {
+                console.log(text);
+            },
+            totalDependencies: 0,
+            monitorRunDependencies: function (left) {
+                this.totalDependencies = Math.max(this.totalDependencies, left);
+                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             }
+        };
+        Module.setStatus('Downloading...');
+    </script>
 
-        </script>
+    <script async type="text/javascript" src="index.js"></script>
 
-    </body>
+    <script async type="text/javascript">
+        resize();
+        window.addEventListener("resize", resize);
+        function resize() {
+            var canvas = document.getElementById('canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+    </script>
+
+</body>
+
 </html>

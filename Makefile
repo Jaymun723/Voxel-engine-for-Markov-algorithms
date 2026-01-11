@@ -4,12 +4,13 @@
 ## You may need to it in case you move the position of your directory
 PATH_TO_CGP = cgp/library/
 
-TARGET ?= project #name of the executable
+TARGET ?= voxel-markov #name of the executable
 SRC_DIRS ?= src/ $(PATH_TO_CGP)
 CXX = g++ #Or clang++
 
+BUILD_DIR ?= build
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
-OBJS := $(addsuffix .o,$(basename $(SRCS)))
+OBJS := $(addprefix $(BUILD_DIR)/,$(addsuffix .o,$(basename $(SRCS))))
 DEPS := $(OBJS:.o=.d)
 
 INC_DIRS  := . $(PATH_TO_CGP) src
@@ -23,8 +24,12 @@ $(TARGET): $(OBJS)
 	echo $(CURDIR)
 	$(CXX) $(LDFLAGS) $(OBJS) -o $@ $(LOADLIBES) $(LDLIBS)
 
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) -c $< -o $@
+
 .PHONY: clean
 clean:
-	$(RM) $(TARGET) $(OBJS) $(DEPS) imgui.ini
+	$(RM) $(TARGET) $(BUILD_DIR) -r
 
 -include $(DEPS)
